@@ -1,17 +1,40 @@
 import React from "react";
 
 import Text, { ITextProps } from "components/atoms/Text";
-import { TokenPriceListTemplateWrapper } from "./TokenPriceListTemplateStyled";
+import { TokenPriceListTemplateWrapper } from "./TokenPriceListTemplate.styled";
+import LikedTokenReport, {
+  ILikedTokenReportProps,
+} from "components/molecules/LikedTokenReport";
+import LikedList, { ILikedListProps } from "components/molecules/LikedList";
+import TokenTable, { ITokenTableProps } from "components/organisms/TokenTable";
 
 interface ITokenPriceListTemplateProps {
-  headerText: ITextProps;
+  headerTextProps: ITextProps;
+  likedTokenReportProps: ILikedTokenReportProps;
+  likedListProps: ILikedListProps;
+  tokenTableProps: ITokenTableProps;
 }
 
 const TokenPriceListTemplate = (props: ITokenPriceListTemplateProps) => {
-  const { headerText } = props;
+  const {
+    headerTextProps,
+    likedTokenReportProps,
+    likedListProps,
+    tokenTableProps,
+  } = props;
   return (
     <TokenPriceListTemplateWrapper>
-      <Text {...headerText} />
+      {/* Header title */}
+      <Text {...headerTextProps} />
+
+      {/* Liked token report */}
+      <LikedTokenReport {...likedTokenReportProps} />
+
+      {/* Token table */}
+      <TokenTable {...tokenTableProps} />
+
+      {/* Liked list */}
+      <LikedList {...likedListProps} />
     </TokenPriceListTemplateWrapper>
   );
 };

@@ -1,24 +1,34 @@
-// import { useState } from "react";
+import { useState } from "react";
 import "./App.css";
-// import { useSubPythPrices } from "./hooks/useSubPythPrices";
-// import { TokenTable } from "components/TokenTable";
-// import { LikedList } from "components/LikedList";
-// import { LikedTokenReport } from "components/LikedTokenReport";
+import { useSubPythPrices } from "./hooks/useSubPythPrices";
 import { tokens } from "./constants";
 import TokenPriceListTemplate from "components/templates/TokenPriceListTemplate";
 
 function App() {
-  // const [likedList, setLikedList] = useState<string[]>([]);
-  // const [tokenPrices, previousTokenPrices] = useSubPythPrices();
+  const [likedList, setLikedList] = useState<string[]>([]);
+  const [tokenPrices, previousTokenPrices] = useSubPythPrices();
 
   return (
-    <TokenPriceListTemplate
-      headerText={{
-        text: `Token prices from ${tokens.length} tokens`,
-        size: "4rem",
-        tag: "header",
-      }}
-    />
+    <div className="App">
+      <TokenPriceListTemplate
+        headerTextProps={{
+          text: `Token prices from ${tokens.length} tokens`,
+          size: "4rem",
+          tag: "header",
+        }}
+        likedTokenReportProps={{
+          likedTokens: likedList,
+          tokenPrices: tokenPrices,
+        }}
+        likedListProps={{ tokens: likedList }}
+        tokenTableProps={{
+          tokenPrices: tokenPrices,
+          previousPrices: previousTokenPrices,
+          tokens,
+          onChange: setLikedList,
+        }}
+      />
+    </div>
   );
 }
 
