@@ -1,37 +1,67 @@
 import { BigNumber } from "ethers";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { TokenTableWrapper } from "./TokenTable.styled";
 import { formatUnits, parseUnits } from "ethers/lib/utils";
+import DataList from "components/molecules/DataList";
 
 interface IToken {
   name: string;
   priceId: string;
 }
 
+interface ITokenPriceList extends IToken {
+  currentPrice: string;
+  priceChanges: string;
+  changeColor: string;
+}
+
 export interface ITokenTableProps {
   tokenPrices: Record<string, BigNumber>;
   previousPrices: Record<string, BigNumber>;
   tokens: Array<IToken>;
-  onChange: (likedList: Array<string>) => void;
+  onChange: (likedTokens: Array<string>) => void;
 }
 
-const TokenTable = (props: ITokenTableProps) => {
-  const { tokenPrices, previousPrices, tokens, onChange } = props;
-  const [likedList, setLikedList] = useState<Array<string>>([]);
+const TokenTable: React.FC<ITokenTableProps> = ({
+  tokenPrices,
+  previousPrices,
+  tokens,
+  onChange,
+}) => {
+  const [likedSet, setLikedSet] = useState<Set<string>>(new Set());
 
-  const handleLikedToken = (token: IToken) => {
-    const newLikedListState = [...likedList];
-    const indexLikedList = newLikedListState.indexOf(token.name);
-
-    if (indexLikedList !== -1) {
-      newLikedListState.splice(indexLikedList, 1);
-    } else {
-      newLikedListState.push(token.name);
-    }
-
-    setLikedList(newLikedListState);
-    onChange(newLikedListState);
+  const handleLikedToken = (tokenName: string) => {
+    const newLikedSet = new Set(likedSet);
+    newLikedSet.has(tokenName)
+      ? newLikedSet.delete(tokenName)
+      : newLikedSet.add(tokenName);
+    setLikedSet(newLikedSet);
+    onChange(Array.from(newLikedSet));
   };
+
+  const tokenPriceList: ITokenPriceList[] = useMemo(() => {
+    return tokens.map((token) => {
+      const currentPrice = tokenPrices[token.name] || BigNumber.from(0);
+      const last24Price = previousPrices[token.name] || BigNumber.from(0);
+
+      const percentChanged = last24Price.isZero()
+        ? BigNumber.from(0)
+        : currentPrice
+            .sub(last24Price)
+            .mul(parseUnits("1", 30))
+            .div(last24Price);
+
+      const priceChanges = formatUnits(percentChanged, 28);
+      const changeColor = percentChanged.gte(0) ? "green" : "red";
+
+      return {
+        ...token,
+        currentPrice: formatUnits(currentPrice, 30),
+        priceChanges,
+        changeColor,
+      };
+    });
+  }, [tokens, tokenPrices, previousPrices]);
 
   return (
     <TokenTableWrapper>
@@ -46,48 +76,19 @@ const TokenTable = (props: ITokenTableProps) => {
             </tr>
           </thead>
           <tbody>
-            {tokens.map((t, index) => (
-              <tr key={index}>
+            {tokenPriceList.map((token) => (
+              <tr key={token.name}>
                 <td>
-                  <button onClick={() => handleLikedToken(t)}>
-                    {likedList.includes(t.name) ? "Liked" : "Like"}
+                  <button onClick={() => handleLikedToken(token.name)}>
+                    {likedSet.has(token.name) ? "Liked" : "Like"}
                   </button>
                 </td>
-                <td>{t.name}</td>
-                <td style={{ textAlign: "right" }}>
-                  {(() => {
-                    const price =
-                      Object.entries(tokenPrices).find(
-                        ([key]) => key === t.name
-                      )?.[1] ?? BigNumber.from(0);
-
-                    return formatUnits(price, 30);
-                  })()}
-                </td>
-                {/* todo: show red number when change is negative */}
-                {/*       show green number when change is positive */}
-                <td style={{ textAlign: "right" }}>
-                  {(() => {
-                    const currentPrice =
-                      Object.entries(tokenPrices).find(
-                        ([key]) => key === t.name
-                      )?.[1] ?? BigNumber.from(0);
-
-                    const last24Price =
-                      Object.entries(previousPrices).find(
-                        ([key]) => key === t.name
-                      )?.[1] ?? BigNumber.from(0);
-
-                    const percentChanged = last24Price.isZero()
-                      ? BigNumber.from(0)
-                      : currentPrice
-                          .sub(last24Price)
-                          .mul(parseUnits("1", 30))
-                          .div(last24Price);
-
-                    return formatUnits(percentChanged, 28) + "%";
-                  })()}
-                </td>
+                <td>{token.name}</td>
+                <DataList value={token.currentPrice} />
+                <DataList
+                  value={token.priceChanges}
+                  textColor={token.changeColor}
+                />
               </tr>
             ))}
           </tbody>

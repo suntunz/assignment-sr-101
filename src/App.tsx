@@ -18,11 +18,11 @@ function App() {
         }}
         likedTokenReportProps={{
           likedTokens: likedList,
-          tokenPrices: tokenPrices,
+          tokenPrices,
         }}
         likedListProps={{ tokens: likedList }}
         tokenTableProps={{
-          tokenPrices: tokenPrices,
+          tokenPrices,
           previousPrices: previousTokenPrices,
           tokens,
           onChange: setLikedList,
