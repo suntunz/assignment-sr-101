@@ -24,17 +24,12 @@ const TokenPriceListTemplate = (props: ITokenPriceListTemplateProps) => {
   } = props;
   return (
     <TokenPriceListTemplateWrapper>
-      {/* Header title */}
       <Text {...headerTextProps} />
-
-      {/* Liked token report */}
       <LikedTokenReport {...likedTokenReportProps} />
-
-      {/* Token table */}
-      <TokenTable {...tokenTableProps} />
-
-      {/* Liked list */}
-      <LikedList {...likedListProps} />
+      <div style={{ display: "flex" }}>
+        <TokenTable {...tokenTableProps} />
+        <LikedList {...likedListProps} />
+      </div>
     </TokenPriceListTemplateWrapper>
   );
 };

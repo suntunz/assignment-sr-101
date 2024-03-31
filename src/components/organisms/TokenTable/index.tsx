@@ -3,19 +3,35 @@ import React, { useState } from "react";
 import { TokenTableWrapper } from "./TokenTable.styled";
 import { formatUnits, parseUnits } from "ethers/lib/utils";
 
+interface IToken {
+  name: string;
+  priceId: string;
+}
+
 export interface ITokenTableProps {
   tokenPrices: Record<string, BigNumber>;
   previousPrices: Record<string, BigNumber>;
-  tokens: Array<{
-    name: string;
-    priceId: string;
-  }>;
-  onChange: (likedList: string[]) => void;
+  tokens: Array<IToken>;
+  onChange: (likedList: Array<string>) => void;
 }
 
 const TokenTable = (props: ITokenTableProps) => {
   const { tokenPrices, previousPrices, tokens, onChange } = props;
-  const [likedList, setLikedList] = useState<string[]>([]);
+  const [likedList, setLikedList] = useState<Array<string>>([]);
+
+  const handleLikedToken = (token: IToken) => {
+    const newLikedListState = [...likedList];
+    const indexLikedList = newLikedListState.indexOf(token.name);
+
+    if (indexLikedList !== -1) {
+      newLikedListState.splice(indexLikedList, 1);
+    } else {
+      newLikedListState.push(token.name);
+    }
+
+    setLikedList(newLikedListState);
+    onChange(newLikedListState);
+  };
 
   return (
     <TokenTableWrapper>
@@ -30,21 +46,10 @@ const TokenTable = (props: ITokenTableProps) => {
             </tr>
           </thead>
           <tbody>
-            {tokens.map((t) => (
-              <tr>
+            {tokens.map((t, index) => (
+              <tr key={index}>
                 <td>
-                  <button
-                    onClick={() => {
-                      if (likedList.find((l) => l === t.name)) {
-                        setLikedList(likedList.filter((l) => l !== t.name));
-                        onChange(likedList);
-                      } else {
-                        likedList.push(t.name);
-                        setLikedList(likedList);
-                        onChange(likedList);
-                      }
-                    }}
-                  >
+                  <button onClick={() => handleLikedToken(t)}>
                     {likedList.includes(t.name) ? "Liked" : "Like"}
                   </button>
                 </td>
