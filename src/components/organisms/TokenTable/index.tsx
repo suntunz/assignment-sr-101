@@ -1,5 +1,5 @@
 import { BigNumber } from "ethers";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { TokenTableWrapper } from "./TokenTable.styled";
 import { formatUnits, parseUnits } from "ethers/lib/utils";
 import DataList from "components/molecules/DataList";
@@ -30,6 +30,35 @@ const TokenTable: React.FC<ITokenTableProps> = ({
 }) => {
   const [likedSet, setLikedSet] = useState<Set<string>>(new Set());
 
+  const [pageNum, setPageNum] = useState(1);
+  const [lastElement, setLastElement] = useState(null);
+  const LIMIT = 20;
+  const TOTAL_PAGES = 10;
+
+  const observer = useRef(
+    new IntersectionObserver((entries) => {
+      const first = entries[0];
+      if (first.isIntersecting) {
+        setPageNum((no) => no + 1);
+      }
+    })
+  );
+
+  useEffect(() => {
+    const currentElement = lastElement;
+    const currentObserver = observer.current;
+
+    if (currentElement) {
+      currentObserver.observe(currentElement);
+    }
+
+    return () => {
+      if (currentElement) {
+        currentObserver.unobserve(currentElement);
+      }
+    };
+  }, [lastElement]);
+
   const handleLikedToken = (tokenName: string) => {
     const newLikedSet = new Set(likedSet);
     newLikedSet.has(tokenName)
@@ -40,7 +69,7 @@ const TokenTable: React.FC<ITokenTableProps> = ({
   };
 
   const tokenPriceList: ITokenPriceList[] = useMemo(() => {
-    return tokens.map((token) => {
+    const data = tokens.map((token) => {
       const currentPrice = tokenPrices[token.name] || BigNumber.from(0);
       const last24Price = previousPrices[token.name] || BigNumber.from(0);
 
@@ -61,7 +90,13 @@ const TokenTable: React.FC<ITokenTableProps> = ({
         changeColor,
       };
     });
-  }, [tokens, tokenPrices, previousPrices]);
+
+    if (pageNum > TOTAL_PAGES) {
+      return data;
+    }
+
+    return data.slice(0, pageNum * LIMIT);
+  }, [tokens, pageNum, tokenPrices, previousPrices]);
 
   return (
     <TokenTableWrapper>
@@ -73,8 +108,16 @@ const TokenTable: React.FC<ITokenTableProps> = ({
           <div className="cell text-right">%CHANGE</div>
         </div>
 
-        {tokenPriceList.map((token) => (
-          <div className="row" key={token.priceId}>
+        {tokenPriceList.map((token, index) => (
+          <div
+            className="row"
+            key={token.priceId}
+            ref={
+              index === tokenPriceList.length - 1 && pageNum <= TOTAL_PAGES
+                ? setLastElement
+                : (null as any)
+            }
+          >
             <div className="cell" data-title="Action">
               <button onClick={() => handleLikedToken(token.name)}>
                 {likedSet.has(token.name) ? "Liked" : "Like"}

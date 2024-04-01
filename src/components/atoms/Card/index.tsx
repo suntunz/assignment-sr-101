@@ -9,4 +9,4 @@ const Card = ({ children }: ICardProps) => {
   return <CardWrapper>{children}</CardWrapper>;
 };
 
-export default Card;
+export default React.memo(Card);
