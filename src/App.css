@@ -5,9 +5,21 @@ html {
 
 body {
   margin: 0;
+  background-color: #f5f6f8;
 }
 
 h1 {
   font-size: 2em;
   margin: 0.67em 0;
+}
+
+.App {
+  padding-left: 24px;
+  padding-right: 24px;
+  margin: 0 auto;
+}
+
+.container {
+  max-width: 1280px;
+  margin: 48px auto;
 }

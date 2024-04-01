@@ -65,34 +65,35 @@ const TokenTable: React.FC<ITokenTableProps> = ({
 
   return (
     <TokenTableWrapper>
-      <div style={{ padding: 8, width: "70%" }}>
-        <table>
-          <thead>
-            <tr>
-              <th>ACTION</th>
-              <th>TOKEN</th>
-              <th>PRICE</th>
-              <th>%CHANGE</th>
-            </tr>
-          </thead>
-          <tbody>
-            {tokenPriceList.map((token) => (
-              <tr key={token.name}>
-                <td>
-                  <button onClick={() => handleLikedToken(token.name)}>
-                    {likedSet.has(token.name) ? "Liked" : "Like"}
-                  </button>
-                </td>
-                <td>{token.name}</td>
-                <DataList value={token.currentPrice} />
-                <DataList
-                  value={token.priceChanges}
-                  textColor={token.changeColor}
-                />
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="table">
+        <div className="row header">
+          <div className="cell">ACTION</div>
+          <div className="cell">TOKEN</div>
+          <div className="cell text-right">PRICE</div>
+          <div className="cell text-right">%CHANGE</div>
+        </div>
+
+        {tokenPriceList.map((token) => (
+          <div className="row" key={token.priceId}>
+            <div className="cell" data-title="Action">
+              <button onClick={() => handleLikedToken(token.name)}>
+                {likedSet.has(token.name) ? "Liked" : "Like"}
+              </button>
+            </div>
+            <div className="cell" data-title="Token">
+              {token.name}
+            </div>
+            <div className="cell text-right" data-title="Price">
+              {token.currentPrice}
+            </div>
+            <div className="cell text-right" data-title="Change">
+              <DataList
+                value={token.priceChanges}
+                textColor={token.changeColor}
+              />
+            </div>
+          </div>
+        ))}
       </div>
     </TokenTableWrapper>
   );

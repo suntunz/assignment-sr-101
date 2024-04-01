@@ -15,12 +15,19 @@ export interface ITextProps {
    * @default 16px
    */
   size?: string;
+
+  /**
+   * text color
+   * @default #000000
+   */
+  color?: string;
 }
 
 const Text = (props: ITextProps) => {
-  const { text, size = "16px", tag = "div" } = props;
+  const { text, size = "16px", color, tag = "div" } = props;
+
   return (
-    <StyledText $fontSize={size} as={tag}>
+    <StyledText $fontSize={size} as={tag} $color={color}>
       {text}
     </StyledText>
   );

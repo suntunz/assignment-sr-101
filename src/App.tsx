@@ -10,24 +10,27 @@ function App() {
 
   return (
     <div className="App">
-      <TokenPriceListTemplate
-        headerTextProps={{
-          text: `Token prices from ${tokens.length} tokens`,
-          size: "4rem",
-          tag: "header",
-        }}
-        likedTokenReportProps={{
-          likedTokens: likedList,
-          tokenPrices,
-        }}
-        likedListProps={{ tokens: likedList }}
-        tokenTableProps={{
-          tokenPrices,
-          previousPrices: previousTokenPrices,
-          tokens,
-          onChange: setLikedList,
-        }}
-      />
+      <div className="container">
+        <TokenPriceListTemplate
+          headerTextProps={{
+            text: `Token prices from ${tokens.length} tokens`,
+            size: "2.75rem",
+            tag: "h1",
+            color: "#414342",
+          }}
+          likedTokenReportProps={{
+            likedTokens: likedList,
+            tokenPrices,
+          }}
+          likedListProps={{ tokens: likedList }}
+          tokenTableProps={{
+            tokenPrices,
+            previousPrices: previousTokenPrices,
+            tokens,
+            onChange: setLikedList,
+          }}
+        />
+      </div>
     </div>
   );
 }

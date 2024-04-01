@@ -1,6 +1,8 @@
 import React from "react";
 import { LikedTokenReportWrapper } from "./LikedTokenReport.styled";
 import { BigNumber } from "ethers";
+import Card from "components/atoms/Card";
+import Text from "components/atoms/Text";
 
 export interface ILikedTokenReportProps {
   likedTokens: string[];
@@ -29,15 +31,17 @@ const LikedTokenReport = (props: ILikedTokenReportProps) => {
 
   return (
     <LikedTokenReportWrapper>
-      <div style={{ display: "flex" }}>
-        <div style={{ fontWeight: "bold" }}>
-          HIGHEST Price liked TOKEN: {highestPriceToken}
+      <Card>
+        <div className="text-wrapper">
+          <Text text="HIGHEST Price liked TOKEN: " color="green" />
+          <Text text={highestPriceToken} color="#074707" />
         </div>
-        <div style={{ margin: "0 4rem" }}>||||||||</div>
-        <div style={{ fontWeight: "bold" }}>
-          LOWEST Price liked TOKEN: {lowestPriceToken}
+        <br />
+        <div className="text-wrapper">
+          <Text text="LOWEST Price liked TOKEN: " color="red" />
+          <Text text={lowestPriceToken} color="#c50000" />
         </div>
-      </div>
+      </Card>
     </LikedTokenReportWrapper>
   );
 };
